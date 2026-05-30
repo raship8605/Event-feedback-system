@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Event, Attendee, Feedback
 
-class EventSerializer(serializers.ModelSerializers):
+class EventSerializer(serializers.ModelSerializer):
     average_rating=serializers.ReadOnlyField()
     total_feedbacks=serializers.SerializerMethodField()
 

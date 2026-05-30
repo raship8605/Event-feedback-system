@@ -1,7 +1,7 @@
 from django.urls import path
 from .import views
 
-urlpattens=[
+urlpatterns =[
     #event url
     path('event_list/',views.event_list_create, name='event_list'),
     path('events/<int:pk>/',views.event_detail, name='event_details'),
@@ -11,6 +11,6 @@ urlpattens=[
     path('feedback/',views.feedback_list_create, name='all-feedback'),
 
     #Analytics url
-    path('events/<int:event_id/analytics/',views.event_analytics,name='analytics'),
-    
+    path('events/<int:event_id>/analytics/',views.event_analytics,name='analytics'),
+
 ]
