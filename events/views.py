@@ -44,4 +44,38 @@ def event_detail(request, pk):
         event.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+# feedback views
+@api_view(['GET','POST'])
+@permission_classes([AllowAny])  #anyone can give feedback
+def feedback_list_create(request, event_id=None):
+    if request.method=='GET':
+        if event_id:
+            feedbacks=Feedback.objects.filter(event_id=event_id)
+        else:
+            feedbacks=Feedback.objects.all()
+        serializer=FeedbackSerializer(feedbacks, many=True)
+        return Response(serializer.data)
+    
+    elif request.method=='POST':
+        # create or get attendee
+        attendee_email=request.data.get('attendee_email')
+        attendee_name=request.data.get('attendee_name')
+
+        if not attendee_email or not attendee_name:
+            return Response({'error':'attendee email and attendee name required'}, status=status.HTTP_400_BAD_REQUEST)
+        attendee, created=Attendee.objects.get_or_create(
+            email=attendee_email,
+            defaults={'name':attendee_name}
+        )
+        data={
+            'event':event_id,
+            'attendee':attendee.id,
+            'rating':request.data.get('rating'),
+            'comment':request.data.get('comment', '')
+        }
+        serializer=FeedbackSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
