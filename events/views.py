@@ -78,4 +78,36 @@ def feedback_list_create(request, event_id=None):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+#Analytics view
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def event_analytics(request, event_id):
+    try:
+        event=Event.objects.get(pk=event_id)
+    except Event.DoesNotExist:
+        return Response({'error':'Event not found'}, status=status.HTTP_404_NOT_FOUND)
+    feedbacks=event.feedbacks.all()
+    total=feedbacks.count()
+
+    if total==0:
+        return Response({'message':'Not feedback ye','event_name':event.name})
+    rating_distribution={
+        1:feedbacks.filter(rating=1).count(),
+        2:feedbacks.filter(rating=2).count(),
+        3:feedbacks.filter(rating=3).count(),
+        4:feedbacks.filter(rating=4).count(),
+        5:feedbacks.filter(rating=5).count(),
+    }
+    return Response({
+        'event_name':event.name,
+        'total_feedbacks':total,
+        'average_rating':round(event.average_rating, 2),
+        'rating_distribution':rating_distribution,
+        'recent_comments':FeedbackSerializer(feedbacks.order_by('-created_at')[:5],many=True).data
+    })
+
+
+
 
