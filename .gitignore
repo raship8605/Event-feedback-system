@@ -1,0 +1,6 @@
+# Create .gitignore before adding files
+echo "venv/" > .gitignore
+echo "__pycache__/" >> .gitignore
+echo "*.pyc" >> .gitignore
+echo "db.sqlite3" >> .gitignore
+echo ".env" >> .gitignore
